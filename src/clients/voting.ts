@@ -12,6 +12,27 @@ class VotingClient {
 
   async getVotingState() {
     if (window.ethereum) {
+      const getCandidatesAndVotesPromise = this.getCandidatesAndVotes();
+      const isVotingLivePromise = this.isVotingLive();
+      const getRemainingTimeToVotePromise = this.getRemainingTimeToVote();
+
+      const [candidates, isVotingLive, reamainingTimeToVote] =
+        await Promise.all([
+          getCandidatesAndVotesPromise,
+          isVotingLivePromise,
+          getRemainingTimeToVotePromise,
+        ]);
+
+      return {
+        candidates,
+        isVotingLive,
+        reamainingTimeToVote,
+      };
+    }
+  }
+
+  async getCandidatesAndVotes() {
+    if (window.ethereum) {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       await provider.send("eth_requestAccounts", []);
       const signer = provider.getSigner();
@@ -60,7 +81,7 @@ class VotingClient {
       );
       const reamainingTime: BigNumber =
         await contractInstance.getRemainingTime();
-      return (reamainingTime.toNumber() / 60 / 60 / 24).toFixed(2);
+      return Number((reamainingTime.toNumber() / 60 / 60 / 24).toFixed(2));
     }
   }
 

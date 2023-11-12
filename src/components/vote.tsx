@@ -19,10 +19,17 @@ const vote = async (id: number) => {
   return (await getVoteClient()).vote(id);
 };
 
-export const Vote = () => {
+export const Vote = (props: {
+  candidates: Candidate[];
+  remainingTimeToVote: number;
+  isVotingLive: boolean;
+}) => {
   const [address, setAddress] = useState("");
-  const [votingState, setVotingState] = useState<Candidate[]>([]);
-  const [remainingTimeToVote, setRemainingTimeToVote] = useState(0);
+  const [votingState, setVotingState] = useState<Candidate[]>(props.candidates);
+  const [remainingTimeToVote, setRemainingTimeToVote] = useState(
+    props.remainingTimeToVote
+  );
+  const [isVotingLive, setIsVotingLive] = useState(props.isVotingLive);
   const [hasVoted, sethasVoted] = useState(false);
   const [voteOption, setVoteOption] = useState(0);
 
@@ -55,22 +62,30 @@ export const Vote = () => {
     if (!address) return;
     var client = await getVoteClient();
     const votingStatePromise = client.getVotingState();
-    const getRemainingTimeToVotePromise = client.getRemainingTimeToVote();
-    const canVotePromise = client.hasVoted();
+    const canVotePromise = updateCanVote();
 
-    const [votingState, getRemainingTimeToVote, canVote] = await Promise.all([
+    const [votingState, canVote] = await Promise.all([
       votingStatePromise,
-      getRemainingTimeToVotePromise,
       canVotePromise,
     ]);
 
-    setVotingState(votingState ?? []);
-    setRemainingTimeToVote(Number(getRemainingTimeToVote) ?? 0);
+    setVotingState(votingState?.candidates ?? []);
+    setRemainingTimeToVote(votingState?.reamainingTimeToVote ?? 0);
+    setIsVotingLive(votingState?.isVotingLive);
     sethasVoted(canVote);
+    debugger;
+  };
+
+  const updateCanVote = async () => {
+    if (!address) return;
+    var client = await getVoteClient();
+    const canVote = await client.hasVoted();
+    sethasVoted(canVote);
+    return canVote;
   };
 
   useEffect(() => {
-    updateVotingState();
+    updateCanVote();
     return listenForAccountChange();
   }, [address]);
 
@@ -84,38 +99,46 @@ export const Vote = () => {
                 address={address}
                 remainingTimeToVote={remainingTimeToVote}
               ></Connected>
-              {hasVoted ? (
-                <h2>Thanks for you vote!</h2>
-              ) : (
-                <div className="col">
-                  {votingState.map((candidate) => (
-                    <div className="form-check" key={candidate.id}>
-                      <label>
-                        <input
-                          type="radio"
-                          name="react-tips"
-                          value={candidate.id}
-                          checked={voteOption === candidate.id}
-                          onChange={() => setVoteOption(candidate.id)}
-                          className="form-check-input"
-                        />
-                        {candidate.name}
-                      </label>
+              {isVotingLive ? (
+                <>
+                  {hasVoted ? (
+                    <>
+                      <h2>Thanks for you vote!</h2>
+                      <Results candidates={votingState}></Results>
+                    </>
+                  ) : (
+                    <div className="col">
+                      {votingState.map((candidate) => (
+                        <div className="form-check" key={candidate.id}>
+                          <label>
+                            <input
+                              type="radio"
+                              name="react-tips"
+                              value={candidate.id}
+                              checked={voteOption === candidate.id}
+                              onChange={() => setVoteOption(candidate.id)}
+                              className="form-check-input"
+                            />
+                            {candidate.name}
+                          </label>
+                        </div>
+                      ))}
+                      <button
+                        disabled={hasVoted}
+                        onClick={async () => {
+                          sethasVoted(await vote(voteOption));
+                          updateVotingState();
+                        }}
+                        className="btn btn-secondary"
+                      >
+                        Vote
+                      </button>
                     </div>
-                  ))}
-                  <button
-                    disabled={hasVoted}
-                    onClick={async () => {
-                      sethasVoted(await vote(voteOption));
-                      updateVotingState();
-                    }}
-                    className="btn btn-secondary"
-                  >
-                    Vote
-                  </button>
-                </div>
+                  )}
+                </>
+              ) : (
+                <h2>Voting Finished</h2>
               )}
-              <Results candidates={votingState}></Results>
             </>
           ) : (
             <button

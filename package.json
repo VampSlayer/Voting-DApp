@@ -11,10 +11,13 @@
     "contract:deploy": "npx hardhat run --network polygon ./src/contracts/deploy.js"
   },
   "dependencies": {
+    "@maticnetwork/maticjs": "^3.6.7",
+    "@maticnetwork/maticjs-web3": "^1.0.4",
     "ethers": "^5.7.2",
     "next": "14.0.2",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "web3": "^4.2.2"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.2.3",

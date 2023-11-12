@@ -1,6 +1,13 @@
 import { Vote } from "@/components/vote";
 
+const get = async () => {
+  const VotingServerClient = (await import("../clients/voting-server")).default;
+  return new VotingServerClient().getVotingState();
+};
+
 export default async function Page() {
+  const votingState = await get();
+
   return (
     <main className="container">
       <div className="row justify-content-md-center">
@@ -10,7 +17,7 @@ export default async function Page() {
           </div>
         </div>
       </div>
-      <Vote></Vote>
+      <Vote {...votingState}></Vote>
     </main>
   );
 }
