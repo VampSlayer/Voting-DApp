@@ -107,6 +107,7 @@ export const Vote = () => {
                     disabled={hasVoted}
                     onClick={async () => {
                       sethasVoted(await vote(voteOption));
+                      updateVotingState();
                     }}
                     className="btn btn-secondary"
                   >

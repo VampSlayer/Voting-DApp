@@ -1,15 +1,22 @@
 import { Candidate } from "@/components/results";
-import { contractAddress, contractAbi } from "@/contracts/voting-abi";
+import { contractAbi } from "@/contracts/voting-abi";
 import { ethers, BigNumber } from "ethers";
 
 class VotingClient {
+  contractAddress: string;
+
+  constructor(contractAddress?: string) {
+    this.contractAddress =
+      contractAddress ?? process.env.NEXT_PUBLIC_CONTRACT_ADDRESS ?? "";
+  }
+
   async getVotingState() {
     if (window.ethereum) {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       await provider.send("eth_requestAccounts", []);
       const signer = provider.getSigner();
       const contractInstance = new ethers.Contract(
-        contractAddress,
+        this.contractAddress,
         contractAbi,
         signer
       );
@@ -33,7 +40,7 @@ class VotingClient {
       await provider.send("eth_requestAccounts", []);
       const signer = provider.getSigner();
       const contractInstance = new ethers.Contract(
-        contractAddress,
+        this.contractAddress,
         contractAbi,
         signer
       );
@@ -47,7 +54,7 @@ class VotingClient {
       await provider.send("eth_requestAccounts", []);
       const signer = provider.getSigner();
       const contractInstance = new ethers.Contract(
-        contractAddress,
+        this.contractAddress,
         contractAbi,
         signer
       );
@@ -63,7 +70,7 @@ class VotingClient {
       await provider.send("eth_requestAccounts", []);
       const signer = provider.getSigner();
       const contractInstance = new ethers.Contract(
-        contractAddress,
+        this.contractAddress,
         contractAbi,
         signer
       );
@@ -82,7 +89,7 @@ class VotingClient {
       await provider.send("eth_requestAccounts", []);
       const signer = provider.getSigner();
       const contractInstance = new ethers.Contract(
-        contractAddress,
+        this.contractAddress,
         contractAbi,
         signer
       );

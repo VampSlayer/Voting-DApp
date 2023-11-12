@@ -1,6 +1,3 @@
-export const contractAddress =
-  process.env.CONTRACT_ADDRESS ?? "0xE30b1AE546Be2e091434b1C9A37F47c9026B24AD";
-
 export const contractAbi = [
   {
     inputs: [
