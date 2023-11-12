@@ -1,3 +1,3 @@
-# Polygon Voiting DAPP
+# Voiting DApp
 
-Created using Next JS + Hardhat + Bootstrap
+Created using Polygon + Next JS + Hardhat + Bootstrap

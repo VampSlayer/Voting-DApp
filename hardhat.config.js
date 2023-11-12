@@ -8,16 +8,27 @@ require("@nomiclabs/hardhat-ethers");
 const { API_URL, PRIVATE_KEY } = process.env;
 
 module.exports = {
-  solidity: "0.8.11",
-  defaultNetwork: "volta",
+  solidity: {
+    version: "0.8.19",
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 200,
+      },
+    },
+  },
+  defaultNetwork: "polygon",
   networks: {
     hardhat: {},
-    // TODO: CHANGE ME TO POLYGON
-    volta: {
+    polygon: {
       url: API_URL,
       accounts: [`0x${PRIVATE_KEY}`],
-      gas: 210000000,
-      gasPrice: 800000000000,
     },
+  },
+  paths: {
+    sources: "./src/contracts",
+    tests: "./src/contracts/test",
+    cache: "./cache",
+    artifacts: "./artifacts",
   },
 };
